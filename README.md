@@ -11,7 +11,8 @@ Bu proje, YOLOv8 derin öğrenme modeli kullanılarak Türk araç plakalarını 
 - **Başarı Oranı**: mAP50: 0.946, mAP50-95: 0.67
 
 ![1](https://github.com/user-attachments/assets/a5f6e4af-b506-410a-9664-68bbc5f5eb61)
-![22](https://github.com/user-attachments/assets/afaebc59-a84b-4a55-94b4-6c4df09aae01)
+![22](https://github.com/user-attachments/assets/74a3f6ab-eb93-435f-9227-ddff6969ba09)
+
 
 ## 📋 Özellikler
 
