@@ -10,6 +10,9 @@ Bu proje, YOLOv8 derin öğrenme modeli kullanılarak Türk araç plakalarını 
 - **Eğitim Süresi**: 10 Epoch
 - **Başarı Oranı**: mAP50: 0.946, mAP50-95: 0.67
 
+![1](https://github.com/user-attachments/assets/a5f6e4af-b506-410a-9664-68bbc5f5eb61)
+![22](https://github.com/user-attachments/assets/afaebc59-a84b-4a55-94b4-6c4df09aae01)
+
 ## 📋 Özellikler
 
 - ✅ Farklı açılardan plaka tespiti
@@ -78,6 +81,9 @@ results = model.predict("ornek_resim.jpg", save=True, conf=0.25)
 for r in results:
     print(f"Toplam {len(r.boxes)} adet plaka tespit edildi.")
 ```
+
+
+
 
 ## 📚 Kaynaklar
 
