@@ -91,10 +91,6 @@ for r in results:
 - [YOLOv8 Resmi Dokümantasyon](https://docs.ultralytics.com/)
 - [Türk Plaka Veri Seti](https://www.kaggle.com/datasets/smaildurcan/turkish-license-plate-dataset)
 
-## 👨‍💻 Geliştirici
-
-- **Meryem Arpacı**
-  - GitHub: [@meryemarpaci](https://github.com/meryemarpaci)
 
 ## 📜 Lisans
 
