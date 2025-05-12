@@ -54,37 +54,6 @@ opencv-python>=4.5.0
 matplotlib>=3.3.0
 ```
 
-### Modeli Eğitmek İçin
-
-```python
-from ultralytics import YOLO
-
-# Önceden eğitilmiş modeli yükle
-model = YOLO("yolov8n.pt")
-
-# Modeli eğit
-model.train(data="data.yaml", epochs=10, imgsz=320, batch=16, patience=5)
-```
-
-### Plaka Tespiti İçin
-
-```python
-from ultralytics import YOLO
-import cv2
-
-# Eğitilmiş modeli yükle
-model = YOLO("best.pt")
-
-# Görüntü üzerinde tespit yap
-results = model.predict("ornek_resim.jpg", save=True, conf=0.25)
-
-# Sonuçları göster
-for r in results:
-    print(f"Toplam {len(r.boxes)} adet plaka tespit edildi.")
-```
-
-
-
 
 ## 📚 Kaynaklar
 
