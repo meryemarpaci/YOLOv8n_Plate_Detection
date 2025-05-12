@@ -26,17 +26,39 @@ Proje, önceden eğitilmiş YOLOv8n modelini baz alarak, transfer learning yakla
 - **Eğitim Parametreleri**:
   - epochs: 10
   - img size: 320x320
-  - batch size: 16
+  - batch size: 4
   - optimizer: AdamW
-  - learning rate: 0.002
+  - learning rate: 0.01 (otomatik ayarlanır)
+
+### Eğitim Grafikleri
+
+<p align="center">
+  <img src="metrics/results.png" alt="Eğitim Sonuçları" width="700"/>
+</p>
+
+<p align="center">
+  <img src="metrics/confusion_matrix.png" alt="Karışıklık Matrisi" width="500"/>
+</p>
+
+<p align="center">
+  <img src="metrics/F1_curve.png" alt="F1 Eğrisi" width="500"/> 
+  <img src="metrics/PR_curve.png" alt="PR Eğrisi" width="500"/>
+</p>
 
 ## 🔍 Test Sonuçları
 
-Model eğitimi sonucunda elde edilen metrikler:
+Model eğitimi sonucunda elde edilen metrikler (10. epoch):
 
 ```
 Class     Images  Instances      Box(P          R      mAP50  mAP50-95)
 all           50         50      0.989        0.9      0.946       0.67
+```
+
+Eğitimin son epoch verilerine göre (%94.6 mAP50 başarı oranı):
+
+```
+epoch,time,train/box_loss,train/cls_loss,train/dfl_loss,metrics/precision(B),metrics/recall(B),metrics/mAP50(B),metrics/mAP50-95(B)
+10,229.505,1.28521,1.45631,0.90175,0.98891,0.9,0.94646,0.67031
 ```
 
 ## 🛠️ Kullanım
@@ -59,7 +81,7 @@ from ultralytics import YOLO
 model = YOLO("yolov8n.pt")
 
 # Modeli eğit
-model.train(data="data.yaml", epochs=10, imgsz=320, batch=16, patience=5)
+model.train(data="data.yaml", epochs=10, imgsz=320, batch=4, patience=5)
 ```
 
 ### Plaka Tespiti İçin
