@@ -10,6 +10,10 @@ Bu proje, YOLOv8 derin öğrenme modeli kullanılarak Türk araç plakalarını 
 - **Eğitim Süresi**: 10 Epoch
 - **Başarı Oranı**: mAP50: 0.946, mAP50-95: 0.67
 
+![1](https://github.com/user-attachments/assets/a5f6e4af-b506-410a-9664-68bbc5f5eb61)
+![22](https://github.com/user-attachments/assets/74a3f6ab-eb93-435f-9227-ddff6969ba09)
+
+
 ## 📋 Özellikler
 
 - ✅ Farklı açılardan plaka tespiti
@@ -106,10 +110,6 @@ for r in results:
 - [YOLOv8 Resmi Dokümantasyon](https://docs.ultralytics.com/)
 - [Türk Plaka Veri Seti](https://www.kaggle.com/datasets/smaildurcan/turkish-license-plate-dataset)
 
-## 👨‍💻 Geliştirici
-
-- **Meryem Arpacı**
-  - GitHub: [@meryemarpaci](https://github.com/meryemarpaci)
 
 ## 📜 Lisans
 
