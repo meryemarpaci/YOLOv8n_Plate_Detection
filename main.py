@@ -4,17 +4,32 @@ from ultralytics import YOLO
 import os
 import cv2
 import matplotlib.pyplot as plt
+from ultralytics.utils.callbacks.tensorboard import on_fit_epoch_end
+from ultralytics.utils.callbacks import Callbacks
 
 def train():
-    if os.path.exists("runs/detect/train/weights/last.pt"):
-        model = YOLO("runs/detect/train/weights/last.pt")
-        print("Mevcut checkpoint'ten eğitime devam ediliyor...")
-    else:
-        model = YOLO("yolov8n.pt")
-        print("Yeni eğitim başlatılıyor...")
+    model = YOLO("yolov8n.pt")
+    
+    # Checkpoint callback tanımlama
+    checkpoint_dir = "checkpoints"
+    os.makedirs(checkpoint_dir, exist_ok=True)
+    
+    # Callbacks oluşturma
+    callbacks = Callbacks(model)
+    
+    # ModelCheckpoint callback ekleme
+    def save_checkpoint(trainer):
+        epoch = trainer.epoch
+        model_path = os.path.join(checkpoint_dir, f"epoch_{epoch}.pt")
+        trainer.model.save(model_path)
+        print(f"Checkpoint kaydedildi: {model_path}")
+    
+    # Callback'i kaydet
+    callbacks.register_action("on_train_epoch_end", save_checkpoint)
     
     # Daha hızlı eğitim için epochs değerini 3'e düşürdüm
-    model.train(data="data.yaml", epochs=3, imgsz=320, batch=4, patience=5, resume=True)
+    model.train(data="data.yaml", epochs=3, imgsz=320, batch=4, patience=5, 
+                callbacks=callbacks)
 
 # Pythonda starndart koruma yapısı.
 # python {main.py} => bu kodu çalıştırır.
@@ -25,16 +40,28 @@ def train():
 ####
 #full dataset ile train
 def train_full_dataset():
-    if os.path.exists("runs/detect/train/weights/last.pt"):
-        model = YOLO("runs/detect/train/weights/last.pt")
-        print("Mevcut checkpoint'ten eğitime devam ediliyor...")
-    else:
-        # Önceden eğitilmiş yolo modeli
-        model = YOLO("yolov8n.pt")
-        print("Yeni eğitim başlatılıyor...")
+    model = YOLO("yolov8n.pt")
+    
+    # Checkpoint callback tanımlama
+    checkpoint_dir = "checkpoints_full"
+    os.makedirs(checkpoint_dir, exist_ok=True)
+    
+    # Callbacks oluşturma
+    callbacks = Callbacks(model)
+    
+    # ModelCheckpoint callback ekleme
+    def save_checkpoint(trainer):
+        epoch = trainer.epoch
+        model_path = os.path.join(checkpoint_dir, f"epoch_{epoch}.pt")
+        trainer.model.save(model_path)
+        print(f"Checkpoint kaydedildi: {model_path}")
+    
+    # Callback'i kaydet
+    callbacks.register_action("on_train_epoch_end", save_checkpoint)
     
     # epochs:10, imgsz (görüntü boyutu): 320x320, batch:16
-    results = model.train(data="data.yaml", epochs=10, imgsz=320, batch=16, patience=5, resume=True)
+    results = model.train(data="data.yaml", epochs=10, imgsz=320, batch=16, patience=5,
+                         callbacks=callbacks)
     
     print(f"Eğitim tamamlandı! Model otomatik olarak runs/detect/train klasörüne kaydedildi.")
     return model
@@ -156,6 +183,62 @@ def test_new_image(image_path=None):
         else:
             print("Görüntüde plaka tespit edilemedi.")
 
+def resume_training_from_checkpoint(checkpoint_path=None, epochs=5):
+    """
+    Checkpoint'ten eğitime devam etmek için fonksiyon
+    
+    Args:
+        checkpoint_path: Checkpoint dosyasının yolu
+        epochs: Devam edilecek epoch sayısı
+    """
+    # Checkpoint yolu belirtilmemişse en son checkpoint'i bul
+    if checkpoint_path is None:
+        checkpoint_dir = "checkpoints"
+        if os.path.exists(checkpoint_dir):
+            checkpoint_files = [f for f in os.listdir(checkpoint_dir) if f.endswith('.pt')]
+            if checkpoint_files:
+                # En son epoch'u bul
+                checkpoint_files.sort(key=lambda x: int(x.split('_')[1].split('.')[0]))
+                checkpoint_path = os.path.join(checkpoint_dir, checkpoint_files[-1])
+                print(f"En son checkpoint bulundu: {checkpoint_path}")
+            else:
+                print("Checkpoint bulunamadı, lütfen checkpoint yolunu belirtin.")
+                return
+        else:
+            print("Checkpoint dizini bulunamadı, lütfen checkpoint yolunu belirtin.")
+            return
+    
+    # Checkpoint'ten modeli yükle
+    if not os.path.exists(checkpoint_path):
+        print(f"Hata: '{checkpoint_path}' bulunamadı!")
+        return
+    
+    model = YOLO(checkpoint_path)
+    print(f"Model '{checkpoint_path}' yüklendi.")
+    
+    # Checkpoint callback tanımlama
+    checkpoint_dir = "checkpoints"
+    os.makedirs(checkpoint_dir, exist_ok=True)
+    
+    # Callbacks oluşturma
+    callbacks = Callbacks(model)
+    
+    # ModelCheckpoint callback ekleme
+    def save_checkpoint(trainer):
+        epoch = trainer.epoch
+        model_path = os.path.join(checkpoint_dir, f"epoch_{epoch}.pt")
+        trainer.model.save(model_path)
+        print(f"Checkpoint kaydedildi: {model_path}")
+    
+    # Callback'i kaydet
+    callbacks.register_action("on_train_epoch_end", save_checkpoint)
+    
+    # Eğitime devam et
+    model.train(data="data.yaml", epochs=epochs, imgsz=320, batch=4, patience=5, 
+                callbacks=callbacks)
+    
+    print(f"Eğitim tamamlandı! Model otomatik olarak runs/detect/train klasörüne kaydedildi.")
+
 if __name__ == '__main__':
     # Önceden çalışan tüm fonksiyonları kaldırdım ve sadece menüyü çalıştırıyorum
     
@@ -164,8 +247,9 @@ if __name__ == '__main__':
     print("2 - Modeli tam veri setiyle eğit (uzun süre)")
     print("3 - Modeli eğit, kaydet ve test et")
     print("4 - Yeni bir resimle test et")
+    print("5 - Checkpoint'ten eğitime devam et")
     
-    secim = input("Seçiminiz (1-4): ")
+    secim = input("Seçiminiz (1-5): ")
     
     if secim == "1":
         train()
@@ -175,6 +259,9 @@ if __name__ == '__main__':
         save_and_test_model()
     elif secim == "4":
         test_new_image()
+    elif secim == "5":
+        checkpoint_path = input("Lütfen devam etmek istediğiniz checkpoint dosyasının yolunu girin: ")
+        resume_training_from_checkpoint(checkpoint_path)
     else:
         print("Geçersiz seçim!")
 

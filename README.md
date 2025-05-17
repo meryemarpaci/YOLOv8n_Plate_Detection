@@ -76,17 +76,6 @@ opencv-python>=4.5.0
 matplotlib>=3.3.0
 ```
 
-### Modeli Eğitmek İçin
-
-```python
-from ultralytics import YOLO
-
-# Önceden eğitilmiş modeli yükle
-model = YOLO("yolov8n.pt")
-
-# Modeli eğit
-model.train(data="data.yaml", epochs=10, imgsz=320, batch=4, patience=5)
-```
 
 ### Plaka Tespiti İçin
 
