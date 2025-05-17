@@ -6,9 +6,15 @@ import cv2
 import matplotlib.pyplot as plt
 
 def train():
-    model = YOLO("yolov8n.pt")
+    if os.path.exists("runs/detect/train/weights/last.pt"):
+        model = YOLO("runs/detect/train/weights/last.pt")
+        print("Mevcut checkpoint'ten eğitime devam ediliyor...")
+    else:
+        model = YOLO("yolov8n.pt")
+        print("Yeni eğitim başlatılıyor...")
+    
     # Daha hızlı eğitim için epochs değerini 3'e düşürdüm
-    model.train(data="data.yaml", epochs=10, imgsz=320, batch=4, patience=5)
+    model.train(data="data.yaml", epochs=3, imgsz=320, batch=4, patience=5, resume=True)
 
 # Pythonda starndart koruma yapısı.
 # python {main.py} => bu kodu çalıştırır.
@@ -19,11 +25,16 @@ def train():
 ####
 #full dataset ile train
 def train_full_dataset():
-    # Önceden eğitilmiş yolo modeli
-    model = YOLO("yolov8n.pt")
+    if os.path.exists("runs/detect/train/weights/last.pt"):
+        model = YOLO("runs/detect/train/weights/last.pt")
+        print("Mevcut checkpoint'ten eğitime devam ediliyor...")
+    else:
+        # Önceden eğitilmiş yolo modeli
+        model = YOLO("yolov8n.pt")
+        print("Yeni eğitim başlatılıyor...")
     
     # epochs:10, imgsz (görüntü boyutu): 320x320, batch:16
-    results = model.train(data="data.yaml", epochs=10, imgsz=320, batch=16, patience=5)
+    results = model.train(data="data.yaml", epochs=10, imgsz=320, batch=16, patience=5, resume=True)
     
     print(f"Eğitim tamamlandı! Model otomatik olarak runs/detect/train klasörüne kaydedildi.")
     return model
@@ -76,19 +87,21 @@ def save_and_test_model():
 
 # Veri seti dışındaki herhangi bir resmi test etme
 def test_new_image(image_path=None):
-    model_path = "saved_models/plaka_tanima_model.pt"
-    best_model_path = os.path.join(os.getcwd(), "runs/detect/train/weights/best.pt")
+    model_paths = [
+        "saved_models/plaka_tanima_model.pt",
+        os.path.join(os.getcwd(), "runs/detect/train/weights/best.pt"),
+        os.path.join(os.getcwd(), "runs/detect/train7/weights/best.pt"),
+        "best.pt"
+    ]
     
-    if os.path.exists(model_path):
-        model = YOLO(model_path)
-        print(f"Model '{model_path}' yüklendi.")
-    elif os.path.exists(best_model_path):
-        model = YOLO(best_model_path)
-        print(f"Model '{best_model_path}' yüklendi.")
-    elif os.path.exists("best.pt"):
-        model = YOLO("best.pt")
-        print("Model 'best.pt' yüklendi.")
-    else:
+    model = None
+    for path in model_paths:
+        if os.path.exists(path):
+            model = YOLO(path)
+            print(f"Model '{path}' yüklendi.")
+            break
+    
+    if model is None:
         print("Eğitilmiş model bulunamadı! Önce modeli eğitmeniz gerekmektedir.")
         return
     
